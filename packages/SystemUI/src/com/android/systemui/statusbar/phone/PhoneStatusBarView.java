@@ -118,14 +118,6 @@ public class PhoneStatusBarView extends PanelBar {
         final float x = touch.getX();
         final boolean isLayoutRtl = isLayoutRtl();
 
-        if (mFullWidthNotifications) {
-            // No double swiping. If either panel is open, nothing else can be pulled down.
-            return ((mSettingsPanel == null ? 0 : mSettingsPanel.getExpandedHeight())
-                        + mNotificationPanel.getExpandedHeight() > 0)
-                    ? null
-                    : mNotificationPanel;
-        }
-
         // We split the status bar into thirds: the left 2/3 are for notifications, and the
         // right 1/3 for quick settings. If you pull the status bar down a second time you'll
         // toggle panels no matter where you pull it down.
@@ -142,6 +134,21 @@ public class PhoneStatusBarView extends PanelBar {
         if (region < mSettingsPanelDragzoneMin) region = mSettingsPanelDragzoneMin;
 
         final boolean showSettings = isLayoutRtl ? (x < region) : (w - region < x);
+
+        if (mFullWidthNotifications) {
+            // No double swiping. If either panel is open, nothing else can be pulled down.
+            if ((mSettingsPanel == null ? 0 : mSettingsPanel.getExpandedHeight())
+                        + mNotificationPanel.getExpandedHeight() > 0) {
+                return null;
+            }
+
+            if (showSettings) {
+                mBar.switchToSettings();
+            }
+
+            return mNotificationPanel;
+        }
+
         return showSettings ? mSettingsPanel : mNotificationPanel;
     }
 
